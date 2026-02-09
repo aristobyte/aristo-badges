@@ -16,7 +16,7 @@ export default function SiteHeader({
   return (
     <div className={className}>
       <div className={logoClassName}>
-        <Icons.AristoByteUI size={40} />
+        <Icons.AristoBadges size={40} />
       </div>
       <div>
         <p className={brandClassName}>AristoBadges</p>

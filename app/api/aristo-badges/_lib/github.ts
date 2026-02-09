@@ -29,11 +29,6 @@ type GithubOrgStats = {
 
 const GITHUB_API = "https://api.github.com";
 
-function authHeaders(token?: string | null) {
-  if (!token) return {};
-  return { Authorization: `Bearer ${token}` };
-}
-
 function getRevalidate(revalidateSeconds?: number) {
   if (!revalidateSeconds) return undefined;
   return { revalidate: revalidateSeconds };
@@ -58,12 +53,16 @@ async function githubFetchJson<T>(
   url: string,
   options: GithubFetchOptions,
 ): Promise<{ data: T; link: string | null } | null> {
+  const headers = new Headers({
+    Accept: "application/vnd.github+json",
+    "User-Agent": "aristo-badges",
+  });
+  if (options.token) {
+    headers.set("Authorization", `Bearer ${options.token}`);
+  }
+
   const response = await fetch(url, {
-    headers: {
-      Accept: "application/vnd.github+json",
-      "User-Agent": "aristo-badges",
-      ...authHeaders(options.token),
-    },
+    headers,
     next: getRevalidate(options.revalidateSeconds),
   });
 

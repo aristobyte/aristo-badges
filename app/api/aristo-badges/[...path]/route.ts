@@ -16,7 +16,7 @@ type RouteResult = { svg: string; status?: number; cache: string };
 
 export async function GET(
   request: NextRequest,
-  context: { params: { path: string[] } },
+  context: { params: Promise<{ path: string[] }> },
 ) {
   const { searchParams } = new URL(request.url);
   const theme = parseTheme(searchParams.get("theme"));
@@ -24,7 +24,8 @@ export async function GET(
   const width = Number.parseInt(searchParams.get("width") ?? "", 10);
   const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN || null;
 
-  const parts = (context.params.path || []).map(decodeURIComponent);
+  const params = await context.params;
+  const parts = (params.path || []).map(decodeURIComponent);
   if (parts.length === 0) {
     return svgResponse(renderErrorSvg("Missing path", theme, accent));
   }
