@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import path from "node:path";
 
 const templateCache = new Map<string, string>();
 
@@ -16,9 +17,20 @@ export function loadTemplate(relativePath: string) {
   const key = url.toString();
   const cached = templateCache.get(key);
   if (cached) return cached;
-  const content = fs.readFileSync(url, "utf8");
-  templateCache.set(key, content);
-  return content;
+  try {
+    const content = fs.readFileSync(url, "utf8");
+    templateCache.set(key, content);
+    return content;
+  } catch (error) {
+    const fallbackPath = path.join(
+      process.cwd(),
+      "public",
+      relativePath.replace("./", "")
+    );
+    const fallback = fs.readFileSync(fallbackPath, "utf8");
+    templateCache.set(key, fallback);
+    return fallback;
+  }
 }
 
 export function getScaledDimensions(

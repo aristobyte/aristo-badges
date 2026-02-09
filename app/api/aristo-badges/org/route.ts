@@ -4,6 +4,7 @@ import { renderOrgSvg } from "../_lib/org-svg";
 import { parseAccent, parseTheme, renderErrorSvg } from "../_lib/svg";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 const REVALIDATE_SECONDS = 60 * 60;
 
@@ -19,32 +20,37 @@ export async function GET(request: NextRequest) {
     return svgResponse(svg);
   }
 
-  const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN || null;
-  const stats = await getOrgStats(org, {
-    token,
-    revalidateSeconds: REVALIDATE_SECONDS,
-  });
+  try {
+    const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN || null;
+    const stats = await getOrgStats(org, {
+      token,
+      revalidateSeconds: REVALIDATE_SECONDS,
+    });
 
-  if (!stats) {
-    const svg = renderErrorSvg("GitHub org not found", theme, accent);
-    return svgResponse(svg, 404);
+    if (!stats) {
+      const svg = renderErrorSvg("GitHub org not found", theme, accent);
+      return svgResponse(svg, 404);
+    }
+
+    const svg = renderOrgSvg({
+      org: stats.org,
+      subtitle: `github/${stats.org}`,
+      reposUpdated30d: stats.reposUpdated30d.toLocaleString(),
+      openIssues: stats.openIssues.toLocaleString(),
+      openPrs: stats.openPulls.toLocaleString(),
+      totalForks: stats.totalForks.toLocaleString(),
+      publicMembers: stats.publicMembers.toLocaleString(),
+      publicRepos: stats.publicRepos.toLocaleString(),
+      orgStars: stats.totalStars.toLocaleString(),
+      topRepoName: stats.topRepoName ?? "-",
+      width: Number.isNaN(width) ? undefined : width,
+    });
+
+    return svgResponse(svg);
+  } catch (error) {
+    const svg = renderErrorSvg("Failed to load GitHub data", theme, accent);
+    return svgResponse(svg, 500);
   }
-
-  const svg = renderOrgSvg({
-    org: stats.org,
-    subtitle: `github/${stats.org}`,
-    reposUpdated30d: stats.reposUpdated30d.toLocaleString(),
-    openIssues: stats.openIssues.toLocaleString(),
-    openPrs: stats.openPulls.toLocaleString(),
-    totalForks: stats.totalForks.toLocaleString(),
-    publicMembers: stats.publicMembers.toLocaleString(),
-    publicRepos: stats.publicRepos.toLocaleString(),
-    orgStars: stats.totalStars.toLocaleString(),
-    topRepoName: stats.topRepoName ?? "-",
-    width: Number.isNaN(width) ? undefined : width,
-  });
-
-  return svgResponse(svg);
 }
 
 function svgResponse(svg: string, status = 200) {

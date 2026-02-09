@@ -4,6 +4,7 @@ import { renderNpmSvg } from "../_lib/npm-svg";
 import { parseAccent, parseTheme, renderErrorSvg } from "../_lib/svg";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 const REVALIDATE_SECONDS = 60 * 60;
 
@@ -20,24 +21,29 @@ export async function GET(request: NextRequest) {
     return svgResponse(svg);
   }
 
-  const name = namespace ? `${namespace}/${pkg}` : pkg;
-  const stats = await getNpmStats(name, {
-    revalidateSeconds: REVALIDATE_SECONDS,
-  });
+  try {
+    const name = namespace ? `${namespace}/${pkg}` : pkg;
+    const stats = await getNpmStats(name, {
+      revalidateSeconds: REVALIDATE_SECONDS,
+    });
 
-  if (!stats) {
-    const svg = renderErrorSvg("NPM package not found", theme, accent);
-    return svgResponse(svg, 404);
+    if (!stats) {
+      const svg = renderErrorSvg("NPM package not found", theme, accent);
+      return svgResponse(svg, 404);
+    }
+
+    const svg = renderNpmSvg({
+      packageName: stats.name,
+      version: stats.latestVersion,
+      downloads: stats.monthlyDownloads.toLocaleString(),
+      width: Number.isNaN(width) ? undefined : width,
+    });
+
+    return svgResponse(svg);
+  } catch (error) {
+    const svg = renderErrorSvg("Failed to load NPM data", theme, accent);
+    return svgResponse(svg, 500);
   }
-
-  const svg = renderNpmSvg({
-    packageName: stats.name,
-    version: stats.latestVersion,
-    downloads: stats.monthlyDownloads.toLocaleString(),
-    width: Number.isNaN(width) ? undefined : width,
-  });
-
-  return svgResponse(svg);
 }
 
 function svgResponse(svg: string, status = 200) {

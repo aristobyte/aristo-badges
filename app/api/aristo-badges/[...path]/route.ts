@@ -7,6 +7,7 @@ import { renderRepoSvg } from "../_lib/repo-svg";
 import { parseAccent, parseTheme, renderErrorSvg } from "../_lib/svg";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 const REVALIDATE_REPO = 60 * 30;
 const REVALIDATE_ORG = 60 * 60;
@@ -34,22 +35,30 @@ export async function GET(
   const rest = parts.slice(1);
   const parsedWidth = Number.isNaN(width) ? undefined : width;
 
-  let result: RouteResult;
-  if (kind === "repo") {
-    result = await handleRepo(rest, token, theme, accent, parsedWidth);
-  } else if (kind === "org") {
-    result = await handleOrg(rest, token, theme, accent, parsedWidth);
-  } else if (kind === "npm") {
-    result = await handleNpm(rest, theme, accent, parsedWidth);
-  } else {
-    result = {
-      svg: renderErrorSvg("Unknown aristo-badge type", theme, accent),
-      status: 404,
-      cache: "public, max-age=0, s-maxage=600, stale-while-revalidate=3600",
-    };
-  }
+  try {
+    let result: RouteResult;
+    if (kind === "repo") {
+      result = await handleRepo(rest, token, theme, accent, parsedWidth);
+    } else if (kind === "org") {
+      result = await handleOrg(rest, token, theme, accent, parsedWidth);
+    } else if (kind === "npm") {
+      result = await handleNpm(rest, theme, accent, parsedWidth);
+    } else {
+      result = {
+        svg: renderErrorSvg("Unknown aristo-badge type", theme, accent),
+        status: 404,
+        cache: "public, max-age=0, s-maxage=600, stale-while-revalidate=3600",
+      };
+    }
 
-  return svgResponse(result.svg, result.status ?? 200, result.cache);
+    return svgResponse(result.svg, result.status ?? 200, result.cache);
+  } catch (error) {
+    return svgResponse(
+      renderErrorSvg("Failed to render badge", theme, accent),
+      500,
+      "public, max-age=0, s-maxage=300, stale-while-revalidate=600",
+    );
+  }
 }
 
 function stripSvgSegment(value: string | undefined) {

@@ -102,6 +102,57 @@
   color: var(--accent);
 }
 
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin: 8px auto 18px;
+}
+
+.link {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: 3fff;
+  background: rgba(255, 255, 255, 0.04);
+  transition: all 200ms ease;
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+
+  span {
+    position: relative;
+    z-index: 1;
+  }
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+  }
+
+  &:hover::after {
+    opacity: 0.12;
+  }
+
+  img {
+    filter: invert(1);
+  }
+}
+
 .quickLinks {
   display: flex;
   flex-direction: column;

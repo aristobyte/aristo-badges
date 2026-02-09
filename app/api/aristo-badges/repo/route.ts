@@ -4,6 +4,7 @@ import { renderRepoSvg } from "../_lib/repo-svg";
 import { parseAccent, parseTheme, renderErrorSvg } from "../_lib/svg";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 const REVALIDATE_SECONDS = 60 * 30;
 
@@ -20,34 +21,39 @@ export async function GET(request: NextRequest) {
     return svgResponse(svg);
   }
 
-  const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN || null;
-  const stats = await getRepoStats(owner, repo, {
-    token,
-    revalidateSeconds: REVALIDATE_SECONDS,
-  });
+  try {
+    const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN || null;
+    const stats = await getRepoStats(owner, repo, {
+      token,
+      revalidateSeconds: REVALIDATE_SECONDS,
+    });
 
-  if (!stats) {
-    const svg = renderErrorSvg("GitHub repo not found", theme, accent);
-    return svgResponse(svg, 404);
+    if (!stats) {
+      const svg = renderErrorSvg("GitHub repo not found", theme, accent);
+      return svgResponse(svg, 404);
+    }
+
+    const [orgName, repoName] = stats.fullName.split("/");
+
+    const svg = renderRepoSvg({
+      org: orgName ?? owner,
+      repo: repoName ?? repo,
+      monthlyCommits: stats.monthlyCommits.toLocaleString(),
+      lastCommit: stats.lastCommitAt,
+      latestRelease: stats.latestReleaseTag ?? "-",
+      totalReleases: stats.totalReleases.toLocaleString(),
+      contributors: stats.contributors.toLocaleString(),
+      openPrs: stats.openPulls.toLocaleString(),
+      openIssues: stats.openIssues.toLocaleString(),
+      stars: stats.stars.toLocaleString(),
+      width: Number.isNaN(width) ? undefined : width,
+    });
+
+    return svgResponse(svg);
+  } catch (error) {
+    const svg = renderErrorSvg("Failed to load GitHub data", theme, accent);
+    return svgResponse(svg, 500);
   }
-
-  const [orgName, repoName] = stats.fullName.split("/");
-
-  const svg = renderRepoSvg({
-    org: orgName ?? owner,
-    repo: repoName ?? repo,
-    monthlyCommits: stats.monthlyCommits.toLocaleString(),
-    lastCommit: stats.lastCommitAt,
-    latestRelease: stats.latestReleaseTag ?? "-",
-    totalReleases: stats.totalReleases.toLocaleString(),
-    contributors: stats.contributors.toLocaleString(),
-    openPrs: stats.openPulls.toLocaleString(),
-    openIssues: stats.openIssues.toLocaleString(),
-    stars: stats.stars.toLocaleString(),
-    width: Number.isNaN(width) ? undefined : width,
-  });
-
-  return svgResponse(svg);
 }
 
 function svgResponse(svg: string, status = 200) {

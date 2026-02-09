@@ -61,14 +61,18 @@ async function githubFetchJson<T>(
     headers.set("Authorization", `Bearer ${options.token}`);
   }
 
-  const response = await fetch(url, {
-    headers,
-    next: getRevalidate(options.revalidateSeconds),
-  });
+  try {
+    const response = await fetch(url, {
+      headers,
+      next: getRevalidate(options.revalidateSeconds),
+    });
 
-  if (!response.ok) return null;
-  const data = (await response.json()) as T;
-  return { data, link: response.headers.get("link") };
+    if (!response.ok) return null;
+    const data = (await response.json()) as T;
+    return { data, link: response.headers.get("link") };
+  } catch {
+    return null;
+  }
 }
 
 async function getOpenPulls(
