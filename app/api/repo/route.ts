@@ -14,12 +14,11 @@ export async function GET(request: NextRequest) {
     searchParams.get("org") ??
     searchParams.get("user");
   const repo = searchParams.get("repo") ?? searchParams.get("repository");
-  const cacheEnabled = searchParams.get("cache") === "true";
   const width = Number.parseInt(searchParams.get("width") ?? "", 10);
 
   if (!owner || !repo) {
     const svg = renderRepoErrorSvg("Missing owner/repo");
-    return svgResponse(svg, 400, cacheEnabled);
+    return svgResponse(svg, 400);
   }
 
   try {
@@ -31,7 +30,7 @@ export async function GET(request: NextRequest) {
 
     if (!stats) {
       const svg = renderRepoErrorSvg("GitHub repo not found");
-      return svgResponse(svg, 404, cacheEnabled);
+      return svgResponse(svg, 404);
     }
 
     const [orgName, repoName] = stats.fullName.split("/");
@@ -50,19 +49,16 @@ export async function GET(request: NextRequest) {
       width: Number.isNaN(width) ? undefined : width,
     });
 
-    return svgResponse(svg, 200, cacheEnabled);
+    return svgResponse(svg, 200);
   } catch (error) {
     console.error(error);
     const svg = renderRepoErrorSvg("Failed to load GitHub data");
-    return svgResponse(svg, 500, cacheEnabled);
+    return svgResponse(svg, 500);
   }
 }
 
-function svgResponse(svg: string, status = 200, cacheEnabled = false) {
-  const cacheControl =
-    cacheEnabled
-      ? "public, max-age=0, s-maxage=1800, stale-while-revalidate=86400"
-      : "no-store";
+function svgResponse(svg: string, status = 200) {
+  const cacheControl = "no-store";
   return new NextResponse(svg, {
     status,
     headers: {

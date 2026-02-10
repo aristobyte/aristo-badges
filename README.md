@@ -32,7 +32,7 @@ Pick a template URL, add your values, and drop the SVG into any README.
 Activity, releases, and engagement for a single repo.
 
 <p align="center">
-  <img src="https://badges.aristobyte.com/api/aristo-badges/repo?owner=aristobyte-ui&repo=aristobyte-ui" alt="Repo Badge" />
+  <img src="https://badges.aristobyte.com/api/repo?owner=aristobyte-ui&repo=aristobyte-ui" alt="Repo Badge" />
 </p>
 
 ### 👤 Organisation Badge
@@ -40,7 +40,7 @@ Activity, releases, and engagement for a single repo.
 Org-wide stars, repos, forks, PRs, issues and activity.
 
 <p align="center">
-  <img src="https://badges.aristobyte.com/api/aristo-badges/org?org=aristobyte-ui" alt="Org Badge" />
+  <img src="https://badges.aristobyte.com/api/org?org=aristobyte-ui" alt="Org Badge" />
 </p>
 
 ### 📦 NPM Package Badge
@@ -48,7 +48,7 @@ Org-wide stars, repos, forks, PRs, issues and activity.
 Version and downloads for an NPM package.
 
 <p align="center">
-  <img src="https://badges.aristobyte.com/api/aristo-badges/npm?namespace=@aristobyte-ui&pkg=spinner" alt="NPM Badge" />
+  <img src="https://badges.aristobyte.com/api/npm?namespace=@aristobyte-ui&pkg=spinner" alt="NPM Badge" />
 </p>
 
 ---
@@ -68,33 +68,19 @@ Version and downloads for an NPM package.
 Repository Badge
 
 ```
-https://badges.aristobyte.com/api/aristo-badges/repo?owner=<ORG_OR_USER>&repo=<REPO>
+https://badges.aristobyte.com/api/repo?owner=<ORG_OR_USER>&repo=<REPO>
 ```
 
 Organisation or Owner Badge
 
 ```
-https://badges.aristobyte.com/api/aristo-badges/org?org=<ORG>
+https://badges.aristobyte.com/api/org?org=<ORG>
 ```
 
 NPM Package Badge
 
 ```
-https://badges.aristobyte.com/api/aristo-badges/npm?namespace=<SCOPE>&pkg=<PACKAGE>
-```
-
----
-
-## ⚙️ Optional Query Parameters
-
-| Param   | Type    | Default | Description                                        |
-| ------- | ------- | ------- | -------------------------------------------------- |
-| `cache` | boolean | `false` | When `true`, enables CDN caching for the response. |
-
-Example:
-
-```
-https://badges.aristobyte.com/api/aristo-badges/repo?owner=aristobyte-ui&repo=aristobyte-ui&cache=true
+https://badges.aristobyte.com/api/npm?namespace=<SCOPE>&pkg=<PACKAGE>
 ```
 
 ---

@@ -10,12 +10,11 @@ const REVALIDATE_SECONDS = 60 * 60;
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const org = searchParams.get("org") ?? searchParams.get("owner");
-  const cacheEnabled = searchParams.get("cache") === "true";
   const width = Number.parseInt(searchParams.get("width") ?? "", 10);
 
   if (!org) {
     const svg = renderOrgErrorSvg("Missing org");
-    return svgResponse(svg, 400, cacheEnabled);
+    return svgResponse(svg, 400);
   }
 
   try {
@@ -27,7 +26,7 @@ export async function GET(request: NextRequest) {
 
     if (!stats) {
       const svg = renderOrgErrorSvg("GitHub org not found");
-      return svgResponse(svg, 404, cacheEnabled);
+      return svgResponse(svg, 404);
     }
 
     const svg = renderOrgSvg({
@@ -44,19 +43,16 @@ export async function GET(request: NextRequest) {
       width: Number.isNaN(width) ? undefined : width,
     });
 
-    return svgResponse(svg, 200, cacheEnabled);
+    return svgResponse(svg, 200);
   } catch (error) {
     console.error(error);
     const svg = renderOrgErrorSvg("Failed to load GitHub data");
-    return svgResponse(svg, 500, cacheEnabled);
+    return svgResponse(svg, 500);
   }
 }
 
-function svgResponse(svg: string, status = 200, cacheEnabled = false) {
-  const cacheControl =
-    cacheEnabled
-      ? "public, max-age=0, s-maxage=3600, stale-while-revalidate=172800"
-      : "no-store";
+function svgResponse(svg: string, status = 200) {
+  const cacheControl = "no-store";
   return new NextResponse(svg, {
     status,
     headers: {

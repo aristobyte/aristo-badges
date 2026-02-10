@@ -6,7 +6,7 @@ export const CONFIG = {
   },
   urls: {
     defaultBaseUrl: "https://<netlify-site>.netlify.app",
-    apiBasePath: "/api/aristo-badges",
+    apiBasePath: "/api",
   },
   externalLinks: [
     {
@@ -45,17 +45,17 @@ export const CONFIG = {
       id: "repo" as const,
       labelKey: "quickLinks.labels.repo",
       template:
-        "/api/aristo-badges/repo?owner=<USERNAME_OR_ORGANISATION>&repo=<REPOSITORY>",
+        "/api/repo?owner=<USERNAME_OR_ORGANISATION>&repo=<REPOSITORY>",
     },
     {
       id: "org" as const,
       labelKey: "quickLinks.labels.org",
-      template: "/api/aristo-badges/org?org=<ORGANISATION>",
+      template: "/api/org?org=<ORGANISATION>",
     },
     {
       id: "npm",
       labelKey: "quickLinks.labels.npm",
-      template: "/api/aristo-badges/npm?namespace=<NAMESPACE>&pkg=<PACKAGE>",
+      template: "/api/npm?namespace=<NAMESPACE>&pkg=<PACKAGE>",
     },
   ],
   builder: {
