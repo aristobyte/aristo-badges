@@ -7,6 +7,7 @@
 @use "../components/Accordion/Accordion.scss" as *;
 @use "../components/CopyButton/CopyButton.scss" as *;
 @use "../components/FooterNote/FooterNote.scss" as *;
+@use "../styles/not-found.scss" as *;
 
 :root {
   color-scheme: dark;
