@@ -27,7 +27,7 @@ Pick a template URL, add your values, and drop the SVG into any README.
 
 ---
 
-## 🔀 Repostiroy Badge
+## 🔀 Repository Badge
 
 Activity, releases, and engagement for a single repo.
 
@@ -85,6 +85,34 @@ https://badges.aristobyte.com/api/npm?namespace=<SCOPE>&pkg=<PACKAGE>
 
 ---
 
+## 🧭 Project Architecture
+
+- App type: Next.js App Router (`app/`)
+- Locale entry flow:
+  - `app/page.tsx` redirects to fallback locale (`en-gb`)
+  - `app/[locale]/page.tsx` renders the main UI
+- Public API routes:
+  - `app/api/repo/route.ts`
+  - `app/api/org/route.ts`
+  - `app/api/npm/route.ts`
+- Shared API internals: `app/api/_lib/` (request parsing, data sources, formatters, SVG mappers/templates, response helpers)
+- Main UI composition: `SiteHeader`, `ProjectInfo`, `QuickLinks`, `BadgesBuilder`, `FooterNote` (`components/`)
+- Config + i18n:
+  - `config/index.ts`
+  - `hooks/useConfig.tsx`
+  - `hooks/useTranslation.tsx`
+  - `translations/` (fallback locale: `en-gb`)
+- URL builders for previews/copy actions: `utils/url.ts`
+- Testing:
+  - Unit tests: `*.unit.test.ts(x)`
+  - Server tests: `*.server.test.ts(x)`
+  - API tests: `app/api/_lib/__tests__/`
+- Checks and CI:
+  - Local check scripts: `scripts/check-*.sh`
+  - Workflows: `.github/workflows/checks.yml`, `.github/workflows/validate-tags.yml`
+
+---
+
 ## 🚀 Getting Started
 
 ```bash
@@ -137,13 +165,15 @@ Site Settings → Environment Variables → Add Variable
 
 ## 🤝 Contributing
 
-See ➤ [`CONTRIBUTING.md`](./github/CONTRIBUTING.md).
+- Issues: [github.com/aristobyte/aristo-badges/issues](https://github.com/aristobyte/aristo-badges/issues)
+- Pull requests: [github.com/aristobyte/aristo-badges/pulls](https://github.com/aristobyte/aristo-badges/pulls)
 
 ---
 
 ## 🔐 Security
 
-See ➤ [`SECURITY.md`](./github/SECURITY.md).
+- Security overview: [github.com/aristobyte/aristo-badges/security](https://github.com/aristobyte/aristo-badges/security)
+- Report a vulnerability: [github.com/aristobyte/aristo-badges/security/advisories/new](https://github.com/aristobyte/aristo-badges/security/advisories/new)
 
 ---
 
